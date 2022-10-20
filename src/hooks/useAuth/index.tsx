@@ -22,9 +22,9 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
 
   async function signIn({ email, password }: ICreadentialsProps) {
     APIClient()
-      .post('/user/login', { email, password })
+      .post<IUserProps>('/user/login', { email, password })
       .then((response) => {
-        console.log(response)
+        setUser(response.data)
       })
 
     console.log({ email, password })
