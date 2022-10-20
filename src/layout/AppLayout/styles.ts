@@ -31,7 +31,6 @@ export const Container = styled.div`
     min-height: 100vh;
 
     margin-top: 0;
-    margin-left: 240px; // 240px from sidebar
 
     padding: 2rem;
 
