@@ -1,33 +1,42 @@
-import { FiHome, FiList } from 'react-icons/fi'
+import { FiHome, FiList, FiLogOut } from 'react-icons/fi'
 import Link from 'next/link'
+
+import { useAuth } from 'hooks/useAuth'
 
 import * as Styles from './styles'
 
-import { ISidebarProps } from './types'
+export function Sidebar() {
+  const { signOut } = useAuth()
 
-export function Sidebar(props: ISidebarProps) {
   return (
-    <Styles.Container>
-      <h1>Logo</h1>
+    <Styles.SidebarContainer>
+      <div>
+        <h1>Logo</h1>
 
-      <nav>
-        <Link href="/">
-          <>
-            <FiHome />
+        <nav>
+          <Link href="/">
+            <Styles.LinkContent>
+              <FiHome />
 
-            <a>Home</a>
-          </>
-        </Link>
-        <Link href="/reports">
-          <>
-            <FiList />
+              <a>Home</a>
+            </Styles.LinkContent>
+          </Link>
 
-            <a>Relatórios</a>
-          </>
-        </Link>
-      </nav>
+          <Link href="/reports">
+            <Styles.LinkContent>
+              <FiList />
 
-      <div className="footer"></div>
-    </Styles.Container>
+              <a>Relatórios</a>
+            </Styles.LinkContent>
+          </Link>
+        </nav>
+      </div>
+
+      <Styles.Footer onClick={signOut}>
+        <FiLogOut />
+
+        <a>Sair</a>
+      </Styles.Footer>
+    </Styles.SidebarContainer>
   )
 }
