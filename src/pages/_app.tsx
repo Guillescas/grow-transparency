@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast'
 import { useEffect, useState } from 'react'
 import type { AppProps } from 'next/app'
 
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
           <AppProvider>
             <Component {...pageProps} />
+            <Toaster />
           </AppProvider>
         </ThemeProvider>
       )}
