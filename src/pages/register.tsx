@@ -56,7 +56,7 @@ const Register: NextPage = () => {
     <AuthenticationLayout>
       <header>
         <Typography component="h1" variant="h3">
-          Register
+          Cadastro
         </Typography>
       </header>
       <Box component="form" autoComplete="on" className="form" onSubmit={handleRegisterSubmit}>
