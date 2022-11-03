@@ -2,9 +2,9 @@ import { ReactElement } from 'react'
 
 import * as Styles from './styles'
 
-import { ILoginLayoutProps } from './types'
+import { IAuthenticationLayoutProps } from './types'
 
-export function LoginLayout(props: ILoginLayoutProps): ReactElement {
+export function AuthenticationLayout(props: IAuthenticationLayoutProps): ReactElement {
   return (
     <Styles.Container>
       <main className="content">{props.children}</main>

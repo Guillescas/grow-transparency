@@ -1,10 +1,10 @@
 import { loginValidationSchema } from 'services/validations'
 
-import { ILoginValues } from './types'
+import { ILoginFormData } from './types'
 
 export const useLoginValidation = () => {
   const schema = loginValidationSchema
-  return async (data: ILoginValues): Promise<string[]> => {
+  return async (data: ILoginFormData): Promise<string[]> => {
     return schema
       .validate(data, { abortEarly: false })
       .then(() => [])

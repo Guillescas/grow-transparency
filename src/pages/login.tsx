@@ -1,9 +1,10 @@
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import toast from 'react-hot-toast'
 import { FormEvent, useState } from 'react'
 import NextLink from 'next/link'
 import type { NextPage } from 'next'
 
-import { LoginLayout } from 'layout/LoginLayout'
+import { AuthenticationLayout } from 'layout/AuthenticationLayout'
 import {
   Box,
   Button,
@@ -28,15 +29,17 @@ const Login: NextPage = () => {
 
   async function handleLoginSubmit(event: FormEvent) {
     event.preventDefault()
+    const error = await validate({ email, password })
+    if (error.length > 0) {
+      toast.error(error[0], {
+        position: 'top-center'
+      })
+      return
+    }
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
     }, 2000)
-    const error = await validate({ email, password })
-    if (error.length > 0) {
-      console.log(error)
-      return
-    }
     console.log('Email: ', email)
     console.log('Password: ', password)
   }
@@ -46,7 +49,7 @@ const Login: NextPage = () => {
   }
 
   return (
-    <LoginLayout>
+    <AuthenticationLayout>
       <header>
         <Typography component="h1" variant="h3">
           Login
@@ -99,7 +102,7 @@ const Login: NextPage = () => {
           </NextLink>
         </Box>
       </Box>
-    </LoginLayout>
+    </AuthenticationLayout>
   )
 }
 

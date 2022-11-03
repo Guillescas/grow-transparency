@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
 
-export interface ILoginLayoutProps {
+export interface IAuthenticationLayoutProps {
   children: ReactNode
 }
