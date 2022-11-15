@@ -1,10 +1,14 @@
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import toast from 'react-hot-toast'
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import type { NextPage } from 'next'
 
+import { APIClient } from 'services/api'
+import { setCookie } from 'nookies'
 import { AuthenticationLayout } from 'layout/AuthenticationLayout'
+import { cookiesNames } from 'constants/cookies'
 import {
   Box,
   Button,
@@ -17,9 +21,11 @@ import {
 } from '@mui/material'
 
 import { useLoginValidation } from 'hooks/Validation/useLoginValidation'
+import { useAuth } from 'hooks/useAuth'
 
 const Login: NextPage = () => {
   const validate = useLoginValidation()
+  const { signIn } = useAuth()
 
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -29,19 +35,18 @@ const Login: NextPage = () => {
 
   async function handleLoginSubmit(event: FormEvent) {
     event.preventDefault()
+    setIsLoading(true)
+
     const error = await validate({ email, password })
+
     if (error.length > 0) {
       toast.error(error[0], {
         position: 'top-center'
       })
       return
     }
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-    console.log('Email: ', email)
-    console.log('Password: ', password)
+
+    signIn({ email, password }).finally(() => setIsLoading(false))
   }
 
   const handleClickShowPassword = () => {

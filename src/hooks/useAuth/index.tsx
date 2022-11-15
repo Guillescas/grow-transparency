@@ -1,11 +1,12 @@
+import toast from 'react-hot-toast'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import Router from 'next/router'
 
 import { APIClient } from 'services/api'
-import { destroyCookie, parseCookies } from 'nookies'
+import { destroyCookie, parseCookies, setCookie } from 'nookies'
 import { cookiesNames } from 'constants/cookies'
 
-import { IAuthContextData, ICreadentialsProps, IUserProps } from './types'
+import { IAuthContextData, ICreadentialsProps, IUserProps, IUserSignUpProps } from './types'
 
 export const AuthContext = createContext({} as IAuthContextData)
 
@@ -20,15 +21,29 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
     return {} as IUserProps
   })
 
+  async function signup(data: IUserSignUpProps) {
+    APIClient()
+      .post('/user/register', data)
+      .then((response) => {
+        setCookie(undefined, cookiesNames.token, response.data.token)
+
+        Router.push('/login')
+      })
+      .catch(() => {
+        toast.error('Erro inesperado', {
+          position: 'top-center'
+        })
+      })
+  }
+
   async function signIn({ email, password }: ICreadentialsProps) {
     APIClient()
-      .post<IUserProps>('/user/login', { email, password })
+      .post('/user/login', { email, password })
       .then((response) => {
-        setUser(response.data)
-      })
+        setCookie(undefined, cookiesNames.token, response.data.token)
 
-    console.log({ email, password })
-    console.log('logged')
+        Router.push('/')
+      })
   }
 
   function signOut() {
@@ -41,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
   return (
     <AuthContext.Provider
       value={{
+        signup,
         signIn,
         signOut,
         user,

@@ -1,4 +1,5 @@
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import { FiArrowLeft } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import { FormEvent, useState } from 'react'
 import NextLink from 'next/link'
@@ -17,9 +18,11 @@ import {
 } from '@mui/material'
 
 import { useRegisterValidation } from 'hooks/Validation'
+import { useAuth } from 'hooks/useAuth'
 
 const Register: NextPage = () => {
   const validate = useRegisterValidation()
+  const { signup } = useAuth()
 
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -31,21 +34,22 @@ const Register: NextPage = () => {
 
   async function handleRegisterSubmit(event: FormEvent) {
     event.preventDefault()
+    setIsLoading(true)
+
     const error = await validate({ name, lastName, email, password })
+
     if (error.length > 0) {
       toast.error(error[0], {
         position: 'top-center'
       })
+
+      setIsLoading(false)
       return
     }
-    setIsLoading(true)
-    setTimeout(() => {
+
+    signup({ name, lastName, email, password }).finally(() => {
       setIsLoading(false)
-    }, 2000)
-    console.log('Name: ', name)
-    console.log('LastName: ', lastName)
-    console.log('Email: ', email)
-    console.log('Password: ', password)
+    })
   }
 
   const handleClickShowPassword = () => {
@@ -55,6 +59,12 @@ const Register: NextPage = () => {
   return (
     <AuthenticationLayout>
       <header>
+        <NextLink href="/login">
+          <a>
+            <FiArrowLeft />
+            Voltar para login
+          </a>
+        </NextLink>
         <Typography component="h1" variant="h3">
           Cadastro
         </Typography>
@@ -88,6 +98,7 @@ const Register: NextPage = () => {
           id="email"
           type="email"
           name="email"
+          autoComplete="email"
           placeholder="example@email.com"
           value={email}
           onChange={(event) => setEmail(event.target.value)}

@@ -25,15 +25,18 @@
       {
         "newlinesBetween": "always",
         "groups": [
-          ["/^react/", "/^next/"],
-          ["module", "/^styled-components/", "/(@)/"],
+          ["/^react$/", "/^next$/"],
+          ["module", "/@/"],
           ["/(contexts)/", "/(hooks)/"],
-          "/(components)/",
-          "/(assets)/",
-          "/(public)/",
-          "/(data)/",
-          "/(styles)/",
-          "/(lib)/"
+          ["/components/", "/(components)/"],
+          ["/services/", "/(services)/"],
+          ["/lib/", "/(lib)/"],
+          ["/utils/", "/(utils)/"],
+          ["/config/", "/(config)/"],
+          ["/types/", "/(types)/"],
+          ["/styles/", "/(styles)/"],
+          ["/data/", "/(data)/"],
+          ["/assets/", "/(assets)/"]
         ],
         "alphabetize": { "order": "desc", "ignoreCase": true }
       }

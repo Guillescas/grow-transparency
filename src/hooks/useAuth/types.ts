@@ -11,7 +11,15 @@ export interface ICreadentialsProps {
   password: string
 }
 
+export interface IUserSignUpProps {
+  name: string
+  lastName: string
+  email: string
+  password: string
+}
+
 export interface IAuthContextData {
+  signup: (props: IUserSignUpProps) => Promise<void>
   signIn: (props: ICreadentialsProps) => Promise<void>
   signOut: () => void
   user: IUserProps
