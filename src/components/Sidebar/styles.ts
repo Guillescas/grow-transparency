@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import { ILinkContentProps } from './types'
+
 export const SidebarContainer = styled.div`
   width: 230px;
   height: 100vh;
@@ -23,7 +25,7 @@ export const SidebarContainer = styled.div`
   }
 `
 
-export const LinkContent = styled.a`
+export const LinkContent = styled.a<ILinkContentProps>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -31,6 +33,8 @@ export const LinkContent = styled.a`
   width: 100%;
 
   cursor: pointer;
+
+  background: ${({ theme, isActive }) => (isActive ? theme.colors.gray[200] : 'transparent')};
 
   padding: 0.75rem 1rem;
 

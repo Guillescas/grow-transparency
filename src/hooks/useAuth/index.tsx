@@ -1,10 +1,13 @@
-import toast from 'react-hot-toast'
 import { createContext, ReactNode, useContext, useState } from 'react'
+
+import toast from 'react-hot-toast'
+import { destroyCookie, parseCookies, setCookie } from 'nookies'
 import Router from 'next/router'
+import { ErrorApiResponse } from 'interfaces/api'
+import { cookiesNames } from 'constants/cookies'
+import { AxiosError } from 'axios'
 
 import { APIClient } from 'services/api'
-import { destroyCookie, parseCookies, setCookie } from 'nookies'
-import { cookiesNames } from 'constants/cookies'
 
 import { IAuthContextData, ICreadentialsProps, IUserProps, IUserSignUpProps } from './types'
 
@@ -29,8 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
 
         Router.push('/login')
       })
-      .catch(() => {
-        toast.error('Erro inesperado', {
+      .catch((error: AxiosError<ErrorApiResponse>) => {
+        toast.error(error.response?.data.message || 'Erro inesperado', {
           position: 'top-center'
         })
       })

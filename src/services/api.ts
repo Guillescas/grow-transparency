@@ -3,6 +3,7 @@ import { GetServerSidePropsContext } from 'next'
 import toast from 'react-hot-toast'
 import { destroyCookie, parseCookies } from 'nookies'
 import Router from 'next/router'
+import { ErrorApiResponse } from 'interfaces/api'
 import { cookiesNames } from 'constants/cookies'
 import axios, { AxiosError, AxiosInstance } from 'axios'
 
@@ -26,12 +27,12 @@ export function APIClient(ctx?: GetServerSidePropsContext): AxiosInstance {
     (response) => {
       return response
     },
-    async (error: AxiosError) => {
+    async (error: AxiosError<ErrorApiResponse>) => {
       if (!error.response) {
         return Promise.reject(error)
       }
 
-      if (error.response.status === 403) {
+      if (error.response.data.message === 'Acesso negado: token expirado') {
         if (error.response.config.url === '/login') {
           return toast.error('Usuário ou senha inválidos')
         }

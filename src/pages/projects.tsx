@@ -15,6 +15,8 @@ import {
   TableRow
 } from '@mui/material'
 
+import { ICreateProjectFormProps } from 'components/Modals/CreateProjectModal/types'
+import { CreateProjectModal } from 'components/Modals/CreateProjectModal'
 import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'
@@ -27,16 +29,18 @@ import * as Styles from 'styles/pages/Projects'
 interface IProjectsProps {
   name: string
   description: string
-  cost: number
-  totalTime: number
-  status: number
-  score: number
+  cost: string
+  totalTime: string
+  status: string
+  score: string
   link: string
 }
 
 const Projects: NextPage = () => {
   const [isProjectsLoading, setIsProjectsLoading] = useState(true)
   const [projects, setProjects] = useState<IProjectsProps[]>([])
+  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false)
+  const [newProject, setNewProject] = useState({} as ICreateProjectFormProps)
 
   useEffect(() => {
     APIClient()
@@ -66,11 +70,31 @@ const Projects: NextPage = () => {
     }
   })
 
+  function handleseOpenCreateProjectModal() {
+    setIsCreateProjectModalOpen(true)
+  }
+  function handleseCloseCreateProjectModal() {
+    setIsCreateProjectModalOpen(false)
+  }
+
+  useEffect(() => {
+    setProjects((prevState) => [...prevState, newProject])
+  }, [newProject])
+
   return (
     <AppLayout>
       <Styles.ProjectsContainer>
         <header>
           <h1>Projetos</h1>
+
+          <Button
+            type="button"
+            variant="contained"
+            size="small"
+            onClick={handleseOpenCreateProjectModal}
+          >
+            Criar Projeto
+          </Button>
         </header>
 
         {isProjectsLoading ? (
@@ -101,7 +125,7 @@ const Projects: NextPage = () => {
                       {row.description}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {currencyFormatter(row.cost)}
+                      {currencyFormatter(Number(row.cost))}
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {row.status}
@@ -110,7 +134,9 @@ const Projects: NextPage = () => {
                       {row.score}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {row.link}
+                      <a href={row.link} target="_blank" rel="noreferrer">
+                        {row.link}
+                      </a>
                     </TableCell>
                     <TableCell component="th" scope="row" width={160}>
                       <Button>
@@ -126,6 +152,13 @@ const Projects: NextPage = () => {
             </Table>
           </TableContainer>
         )}
+
+        <CreateProjectModal
+          isModalOpen={isCreateProjectModalOpen}
+          handleCloseModal={handleseCloseCreateProjectModal}
+          maxWidth={800}
+          setNewProject={setNewProject}
+        />
       </Styles.ProjectsContainer>
     </AppLayout>
   )

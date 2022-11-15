@@ -1,14 +1,10 @@
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
-import toast from 'react-hot-toast'
 import { FormEvent, useState } from 'react'
-import { useRouter } from 'next/router'
-import NextLink from 'next/link'
 import type { NextPage } from 'next'
 
-import { APIClient } from 'services/api'
-import { setCookie } from 'nookies'
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import toast from 'react-hot-toast'
+import NextLink from 'next/link'
 import { AuthenticationLayout } from 'layout/AuthenticationLayout'
-import { cookiesNames } from 'constants/cookies'
 import {
   Box,
   Button,

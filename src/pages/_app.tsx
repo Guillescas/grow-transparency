@@ -1,10 +1,11 @@
-import { Toaster } from 'react-hot-toast'
 import { useEffect, useState } from 'react'
+
+import { Toaster } from 'react-hot-toast'
 import type { AppProps } from 'next/app'
 
-import { ThemeProvider } from 'styled-components'
-
 import AppProvider from 'hooks'
+
+import { ThemeProvider } from 'styled-components'
 
 import { theme } from 'styles/themes/default'
 
