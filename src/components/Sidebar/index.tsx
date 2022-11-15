@@ -1,4 +1,4 @@
-import { FiHome, FiList, FiLogOut } from 'react-icons/fi'
+import { FiFileText, FiHome, FiList, FiLogOut } from 'react-icons/fi'
 import Link from 'next/link'
 
 import { useAuth } from 'hooks/useAuth'
@@ -27,6 +27,14 @@ export function Sidebar() {
               <FiList />
 
               <a>Relatórios</a>
+            </Styles.LinkContent>
+          </Link>
+
+          <Link href="/projects">
+            <Styles.LinkContent>
+              <FiFileText />
+
+              <a>Projetos</a>
             </Styles.LinkContent>
           </Link>
         </nav>
