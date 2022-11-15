@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 
 import { FiEdit2, FiTrash } from 'react-icons/fi'
+import { parseCookies } from 'nookies'
 import { AppLayout } from 'layout/AppLayout'
+import { cookiesNames } from 'constants/cookies'
 import { GridColDef } from '@mui/x-data-grid'
 import {
   Button,
@@ -162,6 +164,23 @@ const Projects: NextPage = () => {
       </Styles.ProjectsContainer>
     </AppLayout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const cookies = parseCookies(ctx)
+
+  if (!cookies[cookiesNames.token]) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
 }
 
 export default Projects

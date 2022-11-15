@@ -32,6 +32,8 @@ export function APIClient(ctx?: GetServerSidePropsContext): AxiosInstance {
         return Promise.reject(error)
       }
 
+      console.log(error.response.data.message)
+
       if (error.response.data.message === 'Acesso negado: token expirado') {
         if (error.response.config.url === '/login') {
           return toast.error('Usuário ou senha inválidos')

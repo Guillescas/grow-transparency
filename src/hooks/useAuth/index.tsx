@@ -47,6 +47,11 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
 
         Router.push('/')
       })
+      .catch((error: AxiosError<ErrorApiResponse>) => {
+        toast.error(error.response?.data.message || 'Erro inesperado', {
+          position: 'top-center'
+        })
+      })
   }
 
   function signOut() {
