@@ -18,13 +18,6 @@ export const Container = styled.div`
       display: flex;
     }
   }
-  .sidebar {
-    display: flex;
-
-    @media ${device.laptop} {
-      display: none;
-    }
-  }
 
   .content {
     width: 100%;
