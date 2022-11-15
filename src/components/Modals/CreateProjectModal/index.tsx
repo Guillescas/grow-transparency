@@ -122,7 +122,7 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
           name="totalTime"
           value={totalTime}
           onChange={(event) => setTotalTime(event.target.value)}
-          label="Status (em horas)"
+          label="Tempo total do projeto (em horas)"
           variant="outlined"
           size="small"
           fullWidth
@@ -135,7 +135,7 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
           name="status"
           value={status}
           onChange={(event) => setStatus(event.target.value)}
-          label="Tempo total do projeto (em horas)"
+          label="Status"
           variant="outlined"
           size="small"
           fullWidth
