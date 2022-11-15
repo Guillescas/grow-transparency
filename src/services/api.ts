@@ -1,8 +1,12 @@
 import { GetServerSidePropsContext } from 'next'
 
-import { parseCookies } from 'nookies'
+import toast from 'react-hot-toast'
+import { destroyCookie, parseCookies } from 'nookies'
+import Router from 'next/router'
 import { cookiesNames } from 'constants/cookies'
-import axios, { AxiosInstance } from 'axios'
+import axios, { AxiosError, AxiosInstance } from 'axios'
+
+import { AuthTokenErrorInvalid } from './errors/AuthTokenErrorInvalid'
 
 export function APIClient(ctx?: GetServerSidePropsContext): AxiosInstance {
   const cookies = parseCookies(ctx)
@@ -17,6 +21,33 @@ export function APIClient(ctx?: GetServerSidePropsContext): AxiosInstance {
   if (cookies[cookiesNames.token]) {
     api.defaults.headers.common.Authorization = `Bearer ${cookies[cookiesNames.token]}`
   }
+
+  api.interceptors.response.use(
+    (response) => {
+      return response
+    },
+    async (error: AxiosError) => {
+      if (!error.response) {
+        return Promise.reject(error)
+      }
+
+      if (error.response.status === 403) {
+        if (error.response.config.url === '/login') {
+          return toast.error('Usuário ou senha inválidos')
+        }
+        destroyCookie(ctx, cookiesNames.token)
+
+        if (typeof window !== undefined) {
+          Router.push('/login')
+          toast.error('Token inválido. Faça login novamente')
+        } else {
+          return Promise.reject(new AuthTokenErrorInvalid())
+        }
+      }
+
+      return Promise.reject(error)
+    }
+  )
 
   return api
 }
