@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 
 import toast from 'react-hot-toast'
 import { ErrorApiResponse } from 'interfaces/api'
@@ -8,9 +8,7 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
-  MenuItem,
   OutlinedInput,
-  Select,
   TextField
 } from '@mui/material'
 import BaseModal from '../@BaseModal'
@@ -65,10 +63,6 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
         setIsLoading(false)
       })
   }
-
-  useEffect(() => {
-    // APIClient().get('/a')
-  }, [])
 
   return (
     <BaseModal

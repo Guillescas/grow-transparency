@@ -1,4 +1,4 @@
-import { FiFileText, FiHome, FiList, FiLogOut } from 'react-icons/fi'
+import { FiFileText, FiHome, FiList, FiLogOut, FiUsers } from 'react-icons/fi'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
@@ -24,13 +24,13 @@ export function Sidebar() {
             </Styles.LinkContent>
           </Link>
 
-          <Link href="/reports">
+          {/* <Link href="/reports">
             <Styles.LinkContent isActive={router.asPath === '/reports'}>
               <FiList />
 
               <a>Relatórios</a>
             </Styles.LinkContent>
-          </Link>
+          </Link> */}
 
           <Link href="/projects">
             <Styles.LinkContent isActive={router.asPath === '/projects'}>
@@ -39,6 +39,14 @@ export function Sidebar() {
               <a>Projetos</a>
             </Styles.LinkContent>
           </Link>
+
+          {/* <Link href="/users">
+            <Styles.LinkContent isActive={router.asPath === '/users'}>
+              <FiUsers />
+
+              <a>Usuários</a>
+            </Styles.LinkContent>
+          </Link> */}
         </nav>
       </div>
 
