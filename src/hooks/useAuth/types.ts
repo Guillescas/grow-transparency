@@ -20,7 +20,7 @@ export interface IUserSignUpProps {
 
 export interface IAuthContextData {
   signup: (props: IUserSignUpProps) => Promise<void>
-  signIn: (props: ICreadentialsProps) => Promise<void>
+  signIn: (props: ICreadentialsProps, callback: () => void) => Promise<void>
   signOut: () => void
   user: IUserProps
   setUser: Dispatch<SetStateAction<IUserProps>>

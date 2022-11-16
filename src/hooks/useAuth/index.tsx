@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
       })
   }
 
-  async function signIn({ email, password }: ICreadentialsProps) {
+  async function signIn({ email, password }: ICreadentialsProps, callback?: () => void) {
     APIClient()
       .post('/user/login', { email, password })
       .then((response) => {
@@ -51,6 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
         toast.error(error.response?.data.message || 'Erro inesperado', {
           position: 'top-center'
         })
+      })
+      .finally(() => {
+        if (callback) {
+          callback()
+        }
       })
   }
 

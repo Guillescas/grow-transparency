@@ -5,19 +5,14 @@ import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import toast from 'react-hot-toast'
 import NextLink from 'next/link'
 import { AuthenticationLayout } from 'layout/AuthenticationLayout'
-import {
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  Link,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Box, Button, IconButton, InputAdornment, Link, TextField, Typography } from '@mui/material'
 
 import { useLoginValidation } from 'hooks/Validation/useLoginValidation'
 import { useAuth } from 'hooks/useAuth'
+
+import { Loading } from 'components/Loading'
+
+import { theme } from 'styles/themes/default'
 
 const Login: NextPage = () => {
   const validate = useLoginValidation()
@@ -30,8 +25,9 @@ const Login: NextPage = () => {
   const [password, setPassword] = useState('')
 
   async function handleLoginSubmit(event: FormEvent) {
-    event.preventDefault()
     setIsLoading(true)
+
+    event.preventDefault()
 
     const error = await validate({ email, password })
 
@@ -42,7 +38,9 @@ const Login: NextPage = () => {
       return
     }
 
-    signIn({ email, password }).finally(() => setIsLoading(false))
+    await signIn({ email, password }, () => {
+      setIsLoading(false)
+    })
   }
 
   const handleClickShowPassword = () => {
@@ -96,7 +94,7 @@ const Login: NextPage = () => {
         />
         <Box component="footer" className="form-footer">
           <Button type="submit" variant="contained" disabled={isLoading} fullWidth>
-            {isLoading ? <CircularProgress color="success" /> : 'Login'}
+            {isLoading ? <Loading color={theme.colors.black} width={20} height={20} /> : 'Login'}
           </Button>
           <NextLink href="/register">
             <Link underline="none">Não tem uma conta? Cadastre-se</Link>
