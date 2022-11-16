@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 
 import toast from 'react-hot-toast'
 import { ErrorApiResponse } from 'interfaces/api'
@@ -17,12 +17,12 @@ import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'
 
-import { ICreateProjectModalProps } from './types'
+import { IProjectModalProps, IProjectProps } from './types'
 
 import { theme } from 'styles/themes/default'
 import * as Styles from './styles'
 
-export function CreateProjectModal(props: ICreateProjectModalProps) {
+export function ProjectModal(props: IProjectModalProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const [name, setName] = useState('')
@@ -33,11 +33,21 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
   const [score, setScore] = useState('')
   const [link, setLink] = useState('')
 
-  function handleCreateProject(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
     setIsLoading(true)
 
+    if (props.projectBeignEdited) {
+      handleUpdateProject()
+
+      return
+    }
+
+    handleCreateProject()
+  }
+
+  function handleCreateProject() {
     const project = {
       name,
       description,
@@ -49,9 +59,9 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
     }
 
     APIClient()
-      .post('/project', project)
-      .then(() => {
-        props.setNewProject(project)
+      .post<IProjectProps>('/project', project)
+      .then((response) => {
+        props.setNewProject(response.data)
 
         toast.success('Projeto criado com sucesso')
         props.handleCloseModal()
@@ -64,13 +74,60 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
       })
   }
 
+  function handleUpdateProject() {
+    const updatedProject = {
+      name,
+      description,
+      cost,
+      totalTime,
+      status,
+      score,
+      link
+    }
+
+    APIClient()
+      .put<IProjectProps>(`/project/${props.projectBeignEdited?.id}`, updatedProject)
+      .then((response) => {
+        props.setProjects((prevState) => {
+          return prevState.map((project) => {
+            if (project.id === props.projectBeignEdited?.id) {
+              return response.data
+            }
+
+            return project
+          })
+        })
+
+        toast.success('Projeto atualizado com sucesso')
+        props.handleCloseModal()
+      })
+      .catch((error: AxiosError<ErrorApiResponse>) => {
+        toast.error(error.response?.data.message || 'Erro inesperado')
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    if (props.projectBeignEdited) {
+      setName(props.projectBeignEdited.name)
+      setDescription(props.projectBeignEdited.description)
+      setCost(props.projectBeignEdited.cost)
+      setTotalTime(props.projectBeignEdited.totalTime)
+      setStatus(props.projectBeignEdited.status)
+      setScore(props.projectBeignEdited.score)
+      setLink(props.projectBeignEdited.link)
+    }
+  }, [props.projectBeignEdited])
+
   return (
     <BaseModal
       handleCloseModal={props.handleCloseModal}
       isModalOpen={props.isModalOpen}
-      title="Criar novo projeto"
+      title={props.projectBeignEdited ? 'Editar projeto' : 'Criar novo projeto'}
     >
-      <Styles.CreateProjectModalContainer onSubmit={handleCreateProject}>
+      <Styles.CreateProjectModalContainer onSubmit={handleSubmit}>
         <TextField
           id="name"
           name="name"
@@ -166,6 +223,8 @@ export function CreateProjectModal(props: ICreateProjectModalProps) {
         <Button type="submit" variant="contained" size="medium" disabled={isLoading} fullWidth>
           {isLoading ? (
             <Loading color={theme.colors.black} width={20} height={20} />
+          ) : props.projectBeignEdited ? (
+            'Salvar '
           ) : (
             'Criar Projeto'
           )}

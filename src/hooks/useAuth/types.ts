@@ -1,9 +1,10 @@
 import { Dispatch, SetStateAction } from 'react'
 
 export interface IUserProps {
-  email: string
-  name: string
-  lastName: string
+  email?: string
+  name?: string
+  lastName?: string
+  roles: string[]
 }
 
 export interface ICreadentialsProps {
@@ -16,6 +17,11 @@ export interface IUserSignUpProps {
   lastName: string
   email: string
   password: string
+}
+
+export interface ISignInApiResponseProps {
+  token: string
+  roles: string[]
 }
 
 export interface IAuthContextData {

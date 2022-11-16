@@ -9,7 +9,13 @@ import { AxiosError } from 'axios'
 
 import { APIClient } from 'services/api'
 
-import { IAuthContextData, ICreadentialsProps, IUserProps, IUserSignUpProps } from './types'
+import {
+  IAuthContextData,
+  ICreadentialsProps,
+  ISignInApiResponseProps,
+  IUserProps,
+  IUserSignUpProps
+} from './types'
 
 export const AuthContext = createContext({} as IAuthContextData)
 
@@ -41,8 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
 
   async function signIn({ email, password }: ICreadentialsProps, callback?: () => void) {
     APIClient()
-      .post('/user/login', { email, password })
+      .post<ISignInApiResponseProps>('/user/login', { email, password })
       .then((response) => {
+        setUser({ roles: response.data.roles })
         setCookie(undefined, cookiesNames.token, response.data.token)
 
         Router.push('/')

@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 
-export interface ICreateProjectFormProps {
+export interface IProjectProps {
+  id: number
   name: string
   description: string
   cost: string
@@ -10,12 +11,14 @@ export interface ICreateProjectFormProps {
   link: string
 }
 
-export interface ICreateProjectModalProps {
+export interface IProjectModalProps {
   isModalOpen: boolean
   handleCloseModal: () => void
   title?: string
   maxWidth?: number | string
   maxHeight?: number | string
 
-  setNewProject: Dispatch<SetStateAction<ICreateProjectFormProps>>
+  setNewProject: Dispatch<SetStateAction<IProjectProps>>
+  setProjects: Dispatch<SetStateAction<IProjectProps[]>>
+  projectBeignEdited: IProjectProps | null
 }

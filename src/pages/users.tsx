@@ -17,8 +17,8 @@ import {
   TableRow
 } from '@mui/material'
 
-import { ICreateProjectFormProps } from 'components/Modals/CreateProjectModal/types'
-import { CreateProjectModal } from 'components/Modals/CreateProjectModal'
+import { ICreateProjectFormProps } from 'components/Modals/ProjectModal/types'
+import { CreateProjectModal } from 'components/Modals/ProjectModal'
 import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'

@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 
 import { FiEdit2, FiTrash } from 'react-icons/fi'
+import toast from 'react-hot-toast'
 import { parseCookies } from 'nookies'
 import { AppLayout } from 'layout/AppLayout'
+import { ErrorApiResponse } from 'interfaces/api'
 import { cookiesNames } from 'constants/cookies'
+import { AxiosError } from 'axios'
 import { GridColDef } from '@mui/x-data-grid'
 import {
   Button,
@@ -17,8 +20,8 @@ import {
   TableRow
 } from '@mui/material'
 
-import { ICreateProjectFormProps } from 'components/Modals/CreateProjectModal/types'
-import { CreateProjectModal } from 'components/Modals/CreateProjectModal'
+import { IProjectProps } from 'components/Modals/ProjectModal/types'
+import { ProjectModal } from 'components/Modals/ProjectModal'
 import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'
@@ -28,25 +31,27 @@ import { currencyFormatter } from 'utils/currencyForatter'
 import { theme } from 'styles/themes/default'
 import * as Styles from 'styles/pages/Projects'
 
-interface IProjectsProps {
-  name: string
-  description: string
-  cost: string
-  totalTime: string
-  status: string
-  score: string
-  link: string
+interface IProjectBeignDeletedProps {
+  isLoading: boolean
+  projectId: null | number
 }
 
 const Projects: NextPage = () => {
+  const [projects, setProjects] = useState<IProjectProps[]>([])
   const [isProjectsLoading, setIsProjectsLoading] = useState(true)
-  const [projects, setProjects] = useState<IProjectsProps[]>([])
-  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false)
-  const [newProject, setNewProject] = useState({} as ICreateProjectFormProps)
+
+  const [projectBeignDeleted, setProjectBeignDeleted] = useState<IProjectBeignDeletedProps>({
+    isLoading: false,
+    projectId: null
+  })
+  const [projectBeignEdited, setProjectBeignEdited] = useState<IProjectProps | null>(null)
+
+  const [newProject, setNewProject] = useState({} as IProjectProps)
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
 
   useEffect(() => {
     APIClient()
-      .get<IProjectsProps[]>('/project')
+      .get<IProjectProps[]>('/project')
       .then((response) => {
         setProjects(response.data)
       })
@@ -65,18 +70,45 @@ const Projects: NextPage = () => {
     { field: 'actions', headerName: 'Ações' }
   ]
 
-  const rows: IProjectsProps[] = projects.map((project, index) => {
-    return {
-      id: index + 1,
-      ...project
-    }
-  })
-
-  function handleseOpenCreateProjectModal() {
-    setIsCreateProjectModalOpen(true)
+  function handleseOpenProjectModal() {
+    setIsProjectModalOpen(true)
   }
-  function handleseCloseCreateProjectModal() {
-    setIsCreateProjectModalOpen(false)
+  function handleseCloseProjectModal() {
+    setIsProjectModalOpen(false)
+    setProjectBeignEdited(null)
+  }
+
+  function handleDeleteProject(projectId: number) {
+    setProjectBeignDeleted({
+      isLoading: true,
+      projectId: projectId
+    })
+
+    APIClient()
+      .delete('/projects', {
+        params: {
+          id: projectId
+        }
+      })
+      .then(() => {
+        setProjects((prevState) => prevState.filter((project) => project.id !== projectId))
+
+        toast.success('Projeto deletado com sucesso')
+      })
+      .catch((error: AxiosError<ErrorApiResponse>) => {
+        toast.error(error.response?.data.message || 'Erro inesperado')
+      })
+      .finally(() => {
+        setProjectBeignDeleted({
+          isLoading: false,
+          projectId: null
+        })
+      })
+  }
+
+  function handleUpdateProject(project: IProjectProps) {
+    setProjectBeignEdited(project)
+    setIsProjectModalOpen(true)
   }
 
   useEffect(() => {
@@ -89,12 +121,7 @@ const Projects: NextPage = () => {
         <header>
           <h1>Projetos</h1>
 
-          <Button
-            type="button"
-            variant="contained"
-            size="small"
-            onClick={handleseOpenCreateProjectModal}
-          >
+          <Button type="button" variant="contained" size="small" onClick={handleseOpenProjectModal}>
             Criar Projeto
           </Button>
         </header>
@@ -115,37 +142,47 @@ const Projects: NextPage = () => {
               </TableHead>
 
               <TableBody>
-                {rows.map((row) => (
+                {projects.map((project) => (
                   <TableRow
-                    key={row.name}
+                    key={project.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {row.name}
+                      {project.name}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {row.description}
+                      {project.description}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {currencyFormatter(Number(row.cost))}
+                      {currencyFormatter(Number(project.cost))}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {row.status}
+                      {project.status}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {row.score}
+                      {project.score}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <a href={row.link} target="_blank" rel="noreferrer">
-                        {row.link}
+                      <a href={project.link} target="_blank" rel="noreferrer">
+                        {project.link}
                       </a>
                     </TableCell>
                     <TableCell component="th" scope="row" width={160}>
-                      <Button>
+                      <Button type="button" onClick={() => handleUpdateProject(project)}>
                         <FiEdit2 />
                       </Button>
-                      <Button>
-                        <FiTrash />
+
+                      <Button
+                        type="button"
+                        onClick={() => handleDeleteProject(project.id)}
+                        disabled={projectBeignDeleted.isLoading}
+                      >
+                        {projectBeignDeleted.isLoading &&
+                        projectBeignDeleted.projectId === project.id ? (
+                          <Loading width={12} height={12} color={theme.colors.black} />
+                        ) : (
+                          <FiTrash />
+                        )}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -155,11 +192,13 @@ const Projects: NextPage = () => {
           </TableContainer>
         )}
 
-        <CreateProjectModal
-          isModalOpen={isCreateProjectModalOpen}
-          handleCloseModal={handleseCloseCreateProjectModal}
+        <ProjectModal
+          isModalOpen={isProjectModalOpen}
+          handleCloseModal={handleseCloseProjectModal}
           maxWidth={800}
           setNewProject={setNewProject}
+          setProjects={setProjects}
+          projectBeignEdited={projectBeignEdited}
         />
       </Styles.ProjectsContainer>
     </AppLayout>
