@@ -3,6 +3,7 @@ import { GetServerSideProps, NextPage } from 'next'
 
 import { FiEdit2, FiTrash } from 'react-icons/fi'
 import toast from 'react-hot-toast'
+import { CSVLink } from 'react-csv'
 import { parseCookies } from 'nookies'
 import { AppLayout } from 'layout/AppLayout'
 import { ErrorApiResponse } from 'interfaces/api'
@@ -111,6 +112,17 @@ const Projects: NextPage = () => {
     setIsProjectModalOpen(true)
   }
 
+  const CSVheaders = [
+    { label: 'ID', key: 'id' },
+    { label: 'Nome', key: 'name' },
+    { label: 'Descrição', key: 'description' },
+    { label: 'Custo', key: 'cost' },
+    { label: 'Status', key: 'status' },
+    { label: 'Score', key: 'score' },
+    { label: 'Link', key: 'link' },
+    { label: 'Ações', key: 'actions' }
+  ]
+
   useEffect(() => {
     setProjects((prevState) => [...prevState, newProject])
   }, [newProject])
@@ -125,6 +137,18 @@ const Projects: NextPage = () => {
             Criar Projeto
           </Button>
         </header>
+
+        <section>
+          <CSVLink
+            headers={CSVheaders}
+            data={projects}
+            filename="projetos.csv"
+            target="_blank"
+            style={{ textDecoration: 'none' }}
+          >
+            <Button type="button">Export</Button>
+          </CSVLink>
+        </section>
 
         {isProjectsLoading ? (
           <div className="loading-wrapper">
@@ -158,7 +182,7 @@ const Projects: NextPage = () => {
                         {currencyFormatter(Number(project.cost))}
                       </TableCell>
                       <TableCell component="th" scope="row">
-                        {project.status.name}
+                        {project.status?.name}
                       </TableCell>
                       <TableCell component="th" scope="row">
                         {project.score}
