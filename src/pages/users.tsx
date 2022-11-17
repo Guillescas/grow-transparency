@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 
-import { FiEdit2, FiTrash } from 'react-icons/fi'
+import { FiArrowUp, FiTrash } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import { CSVLink } from 'react-csv'
 import { parseCookies } from 'nookies'
@@ -21,128 +21,162 @@ import {
   TableRow
 } from '@mui/material'
 
-import { IProjectProps } from 'components/Modals/ProjectModal/types'
-import { ProjectModal } from 'components/Modals/ProjectModal'
+import { UserRolesEnum } from 'hooks/useAuth/types'
+
+import { IUserProps } from 'components/Modals/UserModal/types'
+import { UserModal } from 'components/Modals/UserModal'
 import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'
 
-import { currencyFormatter } from 'utils/currencyForatter'
-
 import { theme } from 'styles/themes/default'
-import * as Styles from 'styles/pages/Projects'
+import * as Styles from 'styles/pages/Users'
 
-interface IProjectBeignDeletedProps {
+interface IUserBeignProps {
   isLoading: boolean
-  projectId: null | number
+  userId: null | number
 }
 
 const Users: NextPage = () => {
-  const [projects, setProjects] = useState<IProjectProps[]>([])
-  const [isProjectsLoading, setIsProjectsLoading] = useState(true)
+  const [users, setUsers] = useState<IUserProps[]>([])
+  const [isUsersLoading, setIsUsersLoading] = useState(true)
 
-  const [projectBeignDeleted, setProjectBeignDeleted] = useState<IProjectBeignDeletedProps>({
+  const [userBeignDeleted, setUserBeignDeleted] = useState<IUserBeignProps>({
     isLoading: false,
-    projectId: null
+    userId: null
   })
-  const [projectBeignEdited, setProjectBeignEdited] = useState<IProjectProps | null>(null)
+  const [userBeignPromoted, setUserBeignPromoted] = useState<IUserBeignProps>({
+    isLoading: false,
+    userId: null
+  })
 
-  const [newProject, setNewProject] = useState({} as IProjectProps)
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
+  const [newUser, setNewUser] = useState({} as IUserProps)
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Nome', width: 150 },
-    { field: 'description', headerName: 'Descrição' },
-    { field: 'cost', headerName: 'Custo' },
-    { field: 'status', headerName: 'Status' },
-    { field: 'score', headerName: 'Score' },
-    { field: 'link', headerName: 'Link' },
+    { headerName: 'ID', field: 'id' },
+    { headerName: 'Nome', field: 'name' },
+    { headerName: 'E-mail', field: 'email' },
+    { headerName: 'Cargo', field: 'role' },
     { field: 'actions', headerName: 'Ações' }
   ]
 
-  function handleseOpenProjectModal() {
-    setIsProjectModalOpen(true)
+  function handleseOpenUserModal() {
+    setIsUserModalOpen(true)
   }
-  function handleseCloseProjectModal() {
-    setIsProjectModalOpen(false)
-    setProjectBeignEdited(null)
+  function handleseCloseUserModal() {
+    setIsUserModalOpen(false)
   }
 
-  function handleDeleteProject(projectId: number) {
-    setProjectBeignDeleted({
+  function handleDeleteUser(userId: number) {
+    setUserBeignDeleted({
       isLoading: true,
-      projectId: projectId
+      userId: userId
     })
 
     APIClient()
-      .delete('/projects', {
+      .delete(`/user/${userId}`, {
         params: {
-          id: projectId
+          id: userId
         }
       })
       .then(() => {
-        setProjects((prevState) => prevState.filter((project) => project.id !== projectId))
+        setUsers((prevState) => prevState.filter((user) => user.id !== userId))
 
-        toast.success('Projeto deletado com sucesso')
+        toast.success('Usuário deletado com sucesso')
       })
       .catch((error: AxiosError<ErrorApiResponse>) => {
         toast.error(error.response?.data.message || 'Erro inesperado')
       })
       .finally(() => {
-        setProjectBeignDeleted({
+        setUserBeignDeleted({
           isLoading: false,
-          projectId: null
+          userId: null
         })
       })
   }
 
-  function handleUpdateProject(project: IProjectProps) {
-    setProjectBeignEdited(project)
-    setIsProjectModalOpen(true)
+  function handleMakeUserAsAdmin(userId: number) {
+    setUserBeignPromoted({
+      isLoading: true,
+      userId: userId
+    })
+
+    APIClient()
+      .put(`/user/admin/${userId}`)
+      .then(() => {
+        setUsers((prevState) =>
+          prevState.map((user) => {
+            if (user.id === userId) {
+              const previousRoles = user.roles || []
+
+              return {
+                ...user,
+                roles: [...previousRoles, UserRolesEnum.ROLE_ADMIN]
+              }
+            }
+
+            return user
+          })
+        )
+
+        toast.success('Usuário promovido a administrador com sucesso')
+      })
+      .finally(() => {
+        setUserBeignPromoted({
+          isLoading: false,
+          userId: null
+        })
+      })
   }
 
   const CSVheaders = [
     { label: 'ID', key: 'id' },
     { label: 'Nome', key: 'name' },
-    { label: 'Descrição', key: 'description' },
-    { label: 'Custo', key: 'cost' },
-    { label: 'Status', key: 'status' },
-    { label: 'Score', key: 'score' },
-    { label: 'Link', key: 'link' },
-    { label: 'Ações', key: 'actions' }
+    { label: 'E-mail', key: 'email' },
+    { label: 'Cargos', key: 'roles' }
   ]
+
+  function getFormatedRoles(role: UserRolesEnum) {
+    switch (role) {
+      case UserRolesEnum.ROLE_ADMIN:
+        return 'Admin'
+      case UserRolesEnum.ROLE_USER:
+        return 'Usuário'
+    }
+  }
 
   useEffect(() => {
     APIClient()
-      .get<IProjectProps[]>('/project')
+      .get<IUserProps[]>('/user/all')
       .then((response) => {
-        setProjects(response.data)
+        setUsers(response.data)
       })
       .finally(() => {
-        setIsProjectsLoading(false)
+        setIsUsersLoading(false)
       })
   }, [])
 
   useEffect(() => {
-    setProjects((prevState) => [...prevState, newProject])
-  }, [newProject])
+    setUsers((prevState) => [...prevState, newUser])
+  }, [newUser])
 
   return (
     <AppLayout>
-      <Styles.ProjectsContainer>
+      <Styles.UsersContainer>
         <header>
-          <h1>Projetos</h1>
+          <h1>Usuários</h1>
 
-          <Button type="button" variant="contained" size="small" onClick={handleseOpenProjectModal}>
-            Criar Projeto
+          <Button type="button" variant="contained" size="small" onClick={handleseOpenUserModal}>
+            Criar Usuário
           </Button>
         </header>
 
         <section>
           <CSVLink
             headers={CSVheaders}
-            data={projects}
-            filename="projetos.csv"
+            data={users}
+            filename="usuarios.csv"
             target="_blank"
             style={{ textDecoration: 'none' }}
           >
@@ -150,7 +184,7 @@ const Users: NextPage = () => {
           </CSVLink>
         </section>
 
-        {isProjectsLoading ? (
+        {isUsersLoading ? (
           <div className="loading-wrapper">
             <Loading color={theme.colors.black} />
           </div>
@@ -166,66 +200,71 @@ const Users: NextPage = () => {
               </TableHead>
 
               <TableBody>
-                {projects &&
-                  projects.map((project) => (
-                    <TableRow
-                      key={project.name}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {project.name}
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        {project.description}
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        {currencyFormatter(Number(project.cost))}
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        {project.status?.name}
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        {project.score}
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        <a href={project.link} target="_blank" rel="noreferrer">
-                          {project.link}
-                        </a>
-                      </TableCell>
-                      <TableCell component="th" scope="row" width={160}>
-                        <Button type="button" onClick={() => handleUpdateProject(project)}>
-                          <FiEdit2 />
-                        </Button>
+                {users &&
+                  users.map((user) => {
+                    const isUserAdmin = user.roles?.includes(UserRolesEnum.ROLE_ADMIN)
 
-                        <Button
-                          type="button"
-                          onClick={() => handleDeleteProject(project.id)}
-                          disabled={projectBeignDeleted.isLoading}
-                        >
-                          {projectBeignDeleted.isLoading &&
-                          projectBeignDeleted.projectId === project.id ? (
-                            <Loading width={12} height={12} color={theme.colors.black} />
-                          ) : (
-                            <FiTrash />
-                          )}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                    return (
+                      <TableRow
+                        key={user.id}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {user.id}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                          {user.name}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                          {user.email}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                          {user.roles?.map((role) => {
+                            return getFormatedRoles(role)
+                          })}
+                        </TableCell>
+                        <TableCell component="th" scope="row" width={160}>
+                          <Button
+                            type="button"
+                            onClick={() => handleMakeUserAsAdmin(user.id)}
+                            title="Promover para administrador"
+                            disabled={isUserAdmin || userBeignPromoted.isLoading}
+                          >
+                            {userBeignPromoted.isLoading && userBeignPromoted.userId === user.id ? (
+                              <Loading width={12} height={12} color={theme.colors.black} />
+                            ) : (
+                              <FiArrowUp />
+                            )}
+                          </Button>
+
+                          <Button
+                            type="button"
+                            onClick={() => handleDeleteUser(user.id)}
+                            disabled={userBeignDeleted.isLoading}
+                          >
+                            {userBeignDeleted.isLoading && userBeignDeleted.userId === user.id ? (
+                              <Loading width={12} height={12} color={theme.colors.black} />
+                            ) : (
+                              <FiTrash />
+                            )}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
         )}
 
-        <ProjectModal
-          isModalOpen={isProjectModalOpen}
-          handleCloseModal={handleseCloseProjectModal}
+        <UserModal
+          isModalOpen={isUserModalOpen}
+          handleCloseModal={handleseCloseUserModal}
           maxWidth={800}
-          setNewProject={setNewProject}
-          setProjects={setProjects}
-          projectBeignEdited={projectBeignEdited}
+          setNewUser={setNewUser}
+          setUsers={setUsers}
         />
-      </Styles.ProjectsContainer>
+      </Styles.UsersContainer>
     </AppLayout>
   )
 }
