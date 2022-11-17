@@ -198,26 +198,24 @@ export function ProjectModal(props: IProjectModalProps) {
           required
         />
 
-        <Box style={{ width: '100%' }}>
-          <FormControl fullWidth size="small">
-            <InputLabel id="demo-simple-select-label">Status</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={status}
-              label="Age"
-              onChange={handleChange}
-              size="small"
-              style={{ zIndex: 998 }}
-            >
-              {statusOptions.map((statusOption) => (
-                <MenuItem key={statusOption.id} value={statusOption.id}>
-                  {statusOption.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+        <FormControl fullWidth size="small">
+          <InputLabel id="demo-simple-select-label">Status</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={status}
+            label="Age"
+            onChange={handleChange}
+            size="small"
+            style={{ zIndex: 998 }}
+          >
+            {statusOptions.map((statusOption) => (
+              <MenuItem key={statusOption.id} value={statusOption.id}>
+                {statusOption.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <TextField
           id="score"

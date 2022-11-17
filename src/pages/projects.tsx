@@ -50,17 +50,6 @@ const Projects: NextPage = () => {
   const [newProject, setNewProject] = useState({} as IProjectProps)
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
 
-  useEffect(() => {
-    APIClient()
-      .get<IProjectProps[]>('/project')
-      .then((response) => {
-        setProjects(response.data)
-      })
-      .finally(() => {
-        setIsProjectsLoading(false)
-      })
-  }, [])
-
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Nome', width: 150 },
     { field: 'description', headerName: 'Descrição' },
@@ -124,6 +113,17 @@ const Projects: NextPage = () => {
   ]
 
   useEffect(() => {
+    APIClient()
+      .get<IProjectProps[]>('/project')
+      .then((response) => {
+        setProjects(response.data)
+      })
+      .finally(() => {
+        setIsProjectsLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
     setProjects((prevState) => [...prevState, newProject])
   }, [newProject])
 
@@ -146,7 +146,7 @@ const Projects: NextPage = () => {
             target="_blank"
             style={{ textDecoration: 'none' }}
           >
-            <Button type="button">Export</Button>
+            <Button type="button">Exportar em CSV</Button>
           </CSVLink>
         </section>
 
