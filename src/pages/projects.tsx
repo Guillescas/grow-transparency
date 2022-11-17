@@ -8,7 +8,7 @@ import { parseCookies } from 'nookies'
 import { AppLayout } from 'layout/AppLayout'
 import { ErrorApiResponse } from 'interfaces/api'
 import { cookiesNames } from 'constants/cookies'
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import { GridColDef } from '@mui/x-data-grid'
 import {
   Button,
@@ -38,8 +38,6 @@ interface IProjectBeignDeletedProps {
 }
 
 const Projects: NextPage = () => {
-  const cookies = parseCookies()
-
   const [projects, setProjects] = useState<IProjectProps[]>([])
   const [isProjectsLoading, setIsProjectsLoading] = useState(true)
 
