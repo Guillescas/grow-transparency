@@ -20,7 +20,8 @@ export const theme = {
   font: {
     family: {
       DM: 'DM Sans, sans-serif',
-      Mono: 'Roboto Mono'
+      Mono: 'Roboto Mono',
+      Caveat: 'Caveat'
     }
   }
 }

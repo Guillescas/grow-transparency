@@ -1,4 +1,5 @@
 import React from 'react'
+
 import Document, {
   DocumentInitialProps,
   DocumentContext,
@@ -51,6 +52,13 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
             crossOrigin="true"
+          />
+
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;700&family=Roboto+Mono:wght@700&display=swap"
+            rel="stylesheet"
           />
         </Head>
         <body>

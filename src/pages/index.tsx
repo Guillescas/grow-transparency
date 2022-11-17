@@ -123,9 +123,7 @@ const Home: NextPage = () => {
                       </TableCell>
 
                       <TableCell component="th" scope="row">
-                        {currencyFormatter(
-                          Number(selectedProject.cost) / Number(selectedProject.totalTime)
-                        )}
+                        {currencyFormatter(Number(selectedProject.cost))}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -134,7 +132,9 @@ const Home: NextPage = () => {
                       </TableCell>
 
                       <TableCell component="th" scope="row">
-                        {currencyFormatter(Number(selectedProject.cost))}
+                        {currencyFormatter(
+                          Number(selectedProject.cost) / Number(selectedProject.totalTime)
+                        )}
                       </TableCell>
                     </TableRow>
                   </TableBody>

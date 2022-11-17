@@ -1,10 +1,15 @@
 import { Dispatch, SetStateAction } from 'react'
 
+export enum UserRolesEnum {
+  ROLE_USER = 'ROLE_USER',
+  ROLE_ADMIN = 'ROLE_ADMIN'
+}
+
 export interface IUserProps {
   email?: string
   name?: string
   lastName?: string
-  roles: string[]
+  roles: UserRolesEnum[]
 }
 
 export interface ICreadentialsProps {

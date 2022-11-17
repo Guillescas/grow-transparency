@@ -17,6 +17,8 @@ export const SidebarContainer = styled.div`
     h1 {
       text-align: center;
       margin: 2rem 0;
+
+      font-family: ${({ theme }) => theme.font.family.Caveat};
     }
 
     nav {

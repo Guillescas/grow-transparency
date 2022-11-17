@@ -14,7 +14,8 @@ import {
   ICreadentialsProps,
   ISignInApiResponseProps,
   IUserProps,
-  IUserSignUpProps
+  IUserSignUpProps,
+  UserRolesEnum
 } from './types'
 
 export const AuthContext = createContext({} as IAuthContextData)
@@ -49,8 +50,14 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
     APIClient()
       .post<ISignInApiResponseProps>('/user/login', { email, password })
       .then((response) => {
-        setUser({ roles: response.data.roles })
+        setUser({ roles: response.data.roles as UserRolesEnum[] })
+
         setCookie(undefined, cookiesNames.token, response.data.token)
+        setCookie(
+          undefined,
+          cookiesNames.user,
+          JSON.stringify({ ...user, roles: response.data.roles })
+        )
 
         Router.push('/')
       })
