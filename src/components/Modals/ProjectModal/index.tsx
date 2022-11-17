@@ -4,11 +4,15 @@ import toast from 'react-hot-toast'
 import { ErrorApiResponse } from 'interfaces/api'
 import { AxiosError } from 'axios'
 import {
+  Box,
   Button,
   FormControl,
   InputAdornment,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
+  SelectChangeEvent,
   TextField
 } from '@mui/material'
 import BaseModal from '../@BaseModal'
@@ -17,13 +21,15 @@ import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'
 
-import { IProjectModalProps, IProjectProps } from './types'
+import { IProjectModalProps, IProjectProps, IStatusProps } from './types'
 
 import { theme } from 'styles/themes/default'
 import * as Styles from './styles'
 
 export function ProjectModal(props: IProjectModalProps) {
   const [isLoading, setIsLoading] = useState(false)
+
+  const [statusOptions, setStatusOptions] = useState<IStatusProps[]>([])
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -53,7 +59,7 @@ export function ProjectModal(props: IProjectModalProps) {
       description,
       cost,
       totalTime,
-      status,
+      statusId: Number(status),
       score,
       link
     }
@@ -80,7 +86,7 @@ export function ProjectModal(props: IProjectModalProps) {
       description,
       cost,
       totalTime,
-      status,
+      statusId: Number(status),
       score,
       link
     }
@@ -115,11 +121,23 @@ export function ProjectModal(props: IProjectModalProps) {
       setDescription(props.projectBeignEdited.description)
       setCost(props.projectBeignEdited.cost)
       setTotalTime(props.projectBeignEdited.totalTime)
-      setStatus(props.projectBeignEdited.status)
+      setStatus(String(props.projectBeignEdited.status.id))
       setScore(props.projectBeignEdited.score)
       setLink(props.projectBeignEdited.link)
     }
   }, [props.projectBeignEdited])
+
+  useEffect(() => {
+    APIClient()
+      .get('/status')
+      .then((response) => {
+        setStatusOptions(response.data)
+      })
+  }, [])
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setStatus(event.target.value as string)
+  }
 
   return (
     <BaseModal
@@ -180,18 +198,26 @@ export function ProjectModal(props: IProjectModalProps) {
           required
         />
 
-        <TextField
-          id="status"
-          type="number"
-          name="status"
-          value={status}
-          onChange={(event) => setStatus(event.target.value)}
-          label="Status"
-          variant="outlined"
-          size="small"
-          fullWidth
-          required
-        />
+        <Box style={{ width: '100%' }}>
+          <FormControl fullWidth size="small">
+            <InputLabel id="demo-simple-select-label">Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={status}
+              label="Age"
+              onChange={handleChange}
+              size="small"
+              style={{ zIndex: 998 }}
+            >
+              {statusOptions.map((statusOption) => (
+                <MenuItem key={statusOption.id} value={statusOption.id}>
+                  {statusOption.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
         <TextField
           id="score"

@@ -1,12 +1,17 @@
 import { Dispatch, SetStateAction } from 'react'
 
+export interface IStatusProps {
+  id: number
+  name: string
+}
+
 export interface IProjectProps {
   id: number
   name: string
   description: string
   cost: string
   totalTime: string
-  status: string
+  status: IStatusProps
   score: string
   link: string
 }

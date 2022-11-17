@@ -1,5 +1,6 @@
-import { createGlobalStyle } from 'styled-components'
 import { ThemeInterface } from '../@types/styled-components'
+
+import { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyles = createGlobalStyle<{ theme: ThemeInterface }>`
   * {
@@ -34,6 +35,10 @@ export const GlobalStyles = createGlobalStyle<{ theme: ThemeInterface }>`
     &:focus {
       outline: 1px solid ${({ theme }) => theme.colors.black};
     }
+  }
+
+  .MuiPopover-root {
+    z-index: 999999 !important; // Override Mui styles on react-modal
   }
 
   .react-modal-overlay {

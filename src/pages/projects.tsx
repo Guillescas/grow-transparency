@@ -142,51 +142,52 @@ const Projects: NextPage = () => {
               </TableHead>
 
               <TableBody>
-                {projects.map((project) => (
-                  <TableRow
-                    key={project.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {project.name}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {project.description}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {currencyFormatter(Number(project.cost))}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {project.status}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {project.score}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      <a href={project.link} target="_blank" rel="noreferrer">
-                        {project.link}
-                      </a>
-                    </TableCell>
-                    <TableCell component="th" scope="row" width={160}>
-                      <Button type="button" onClick={() => handleUpdateProject(project)}>
-                        <FiEdit2 />
-                      </Button>
+                {projects &&
+                  projects.map((project) => (
+                    <TableRow
+                      key={project.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {project.name}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {project.description}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {currencyFormatter(Number(project.cost))}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {project.status.name}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {project.score}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <a href={project.link} target="_blank" rel="noreferrer">
+                          {project.link}
+                        </a>
+                      </TableCell>
+                      <TableCell component="th" scope="row" width={160}>
+                        <Button type="button" onClick={() => handleUpdateProject(project)}>
+                          <FiEdit2 />
+                        </Button>
 
-                      <Button
-                        type="button"
-                        onClick={() => handleDeleteProject(project.id)}
-                        disabled={projectBeignDeleted.isLoading}
-                      >
-                        {projectBeignDeleted.isLoading &&
-                        projectBeignDeleted.projectId === project.id ? (
-                          <Loading width={12} height={12} color={theme.colors.black} />
-                        ) : (
-                          <FiTrash />
-                        )}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        <Button
+                          type="button"
+                          onClick={() => handleDeleteProject(project.id)}
+                          disabled={projectBeignDeleted.isLoading}
+                        >
+                          {projectBeignDeleted.isLoading &&
+                          projectBeignDeleted.projectId === project.id ? (
+                            <Loading width={12} height={12} color={theme.colors.black} />
+                          ) : (
+                            <FiTrash />
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
