@@ -15,10 +15,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableHead,
   TableRow
 } from '@mui/material'
 
-import { IProjectProps } from 'components/Modals/ProjectModal/types'
+import { IProjectProps, IStatusProps } from 'components/Modals/ProjectModal/types'
 import { Loading } from 'components/Loading'
 
 import { APIClient } from 'services/api'
@@ -31,6 +32,8 @@ import * as Styles from 'styles/pages/Home'
 const Home: NextPage = () => {
   const [projects, setProjects] = useState<IProjectProps[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState('')
+
+  const [statusOptions, setStatusOptions] = useState<IStatusProps[]>([])
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -51,12 +54,39 @@ const Home: NextPage = () => {
       })
   }, [])
 
+  useEffect(() => {
+    APIClient()
+      .get('/status')
+      .then((response) => {
+        setStatusOptions(response.data)
+      })
+  }, [])
+
   const selectedProject = projects.find((project) => project.id === Number(selectedProjectId))
+
+  interface Column {
+    id: string
+    label: string
+    minWidth?: number
+    align?: 'right'
+    format?: (value: number) => string
+  }
+
+  const columns: Column[] = [
+    { id: 'ID', label: 'ID', minWidth: 80 },
+    { id: 'name', label: 'Nome do projeto', minWidth: 100 }
+  ]
 
   return (
     <AppLayout>
       <Styles.HomeContainer>
+        <header>
+          <h1>Dashboard</h1>
+        </header>
+
         <section>
+          <h1>Overview de custos dos projetos</h1>
+
           <FormControl fullWidth size="small">
             <InputLabel id="project">Selecione um projeto</InputLabel>
             <Select
@@ -113,6 +143,50 @@ const Home: NextPage = () => {
             )}
           </section>
         )}
+
+        <section id="projectsByStatus">
+          <h1>Status dos projetos</h1>
+
+          {statusOptions.map((statusOption) => (
+            <Paper sx={{ width: '100%' }} key={statusOption.id} style={{ marginBottom: '1rem' }}>
+              <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center" colSpan={5}>
+                        Projetos com o status: <strong>{statusOption.name}</strong>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ top: 57, minWidth: column.minWidth }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {projects.map((project) => {
+                      if (project.status.id === statusOption.id) {
+                        return (
+                          <TableRow hover key={project.id}>
+                            <TableCell>{project.id}</TableCell>
+                            <TableCell>{project.name}</TableCell>
+                          </TableRow>
+                        )
+                      }
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          ))}
+        </section>
       </Styles.HomeContainer>
     </AppLayout>
   )

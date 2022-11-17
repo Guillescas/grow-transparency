@@ -7,6 +7,10 @@ export const ProjectsContainer = styled.div`
     justify-content: space-between;
 
     margin-bottom: 2rem;
+
+    h1 {
+      font-size: 2rem;
+    }
   }
 
   section {

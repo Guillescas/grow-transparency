@@ -4,7 +4,6 @@ import toast from 'react-hot-toast'
 import { ErrorApiResponse } from 'interfaces/api'
 import { AxiosError } from 'axios'
 import {
-  Box,
   Button,
   FormControl,
   InputAdornment,

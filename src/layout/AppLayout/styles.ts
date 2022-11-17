@@ -7,27 +7,25 @@ export const Container = styled.div`
   max-width: 100vw;
   height: 100%;
 
+  overflow: hidden;
+
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
 
-  .topbar {
-    display: none;
-
-    @media ${device.laptop} {
-      display: flex;
-    }
-  }
-
   .content {
     width: 100%;
+    height: 100%;
     min-height: 100vh;
+    max-height: 100vh;
 
     margin-top: 0;
 
     padding: 2rem;
 
     background: ${({ theme }) => theme.colors.gray[100]};
+
+    overflow-y: auto;
 
     .loading-wrapper {
       width: 100%;
